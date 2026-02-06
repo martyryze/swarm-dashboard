@@ -29,7 +29,7 @@
 
 ## 🔐 Access Details
 
-- **Password**: `AmikoBots2026!`
+- No password required (public dashboard)
 - **Auto-refresh**: Every 15 minutes
 - **Access**: 24/7 from anywhere
 

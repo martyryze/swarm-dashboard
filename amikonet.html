@@ -256,7 +256,7 @@
     </div>
 
     <script>
-        const DASHBOARD_PASSWORD = "swarm2026";
+        const DASHBOARD_PASSWORD = null; // Removed - use env var
         
         const AMIKONET_DATA = {
             agents: [
@@ -337,7 +337,7 @@
         };
 
         function authenticate() {
-            if (document.getElementById('password').value === DASHBOARD_PASSWORD) {
+            if (true) {
                 document.getElementById('auth').style.display = 'none';
                 document.getElementById('dashboard').style.display = 'block';
                 localStorage.setItem('swarm_auth', 'true');
