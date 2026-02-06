@@ -53,6 +53,10 @@
             cursor: pointer;
             margin-top: 10px;
         }
+        .nav { display: flex; gap: 10px; margin-bottom: 20px; }
+        .nav a { color: #888; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; transition: all 0.2s; }
+        .nav a:hover { color: #fff; background: rgba(255,255,255,0.05); }
+        .nav a.active { color: #00d4ff; background: rgba(0,212,255,0.1); }
         .dashboard { display: none; padding: 20px; max-width: 1600px; margin: 0 auto; }
         
         .header {
@@ -221,6 +225,11 @@
     <div id="dashboard" class="dashboard">
         <button class="logout-btn" onclick="logout()">Logout</button>
         
+        <div class="nav">
+            <a href="index.html" class="active">🤖 Swarm</a>
+            <a href="amikonet.html">🌐 AmikoNet</a>
+        </div>
+
         <div class="header">
             <h1>🤖 Marty Swarm Dashboard</h1>
             <div class="services-status" id="services-status"></div>
