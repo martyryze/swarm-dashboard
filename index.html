@@ -3,472 +3,325 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amiko Swarm Activity Dashboard</title>
+    <title>Marty Swarm Dashboard</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
             font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
-            color: #333;
+            color: #e0e0e0;
         }
-        
         .auth-container {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: rgba(255,255,255,0.1);
         }
-        
         .auth-form {
-            background: white;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
             padding: 40px;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
             text-align: center;
             min-width: 300px;
         }
-        
-        .auth-form h1 {
-            margin-bottom: 30px;
-            color: #333;
-            font-size: 24px;
-        }
-        
+        .auth-form h1 { margin-bottom: 30px; color: #fff; font-size: 24px; }
         .auth-form input {
             width: 100%;
             padding: 15px;
             margin: 10px 0;
-            border: 2px solid #eee;
+            border: 1px solid rgba(255,255,255,0.2);
             border-radius: 10px;
             font-size: 16px;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
             outline: none;
-            transition: border-color 0.3s;
         }
-        
-        .auth-form input:focus {
-            border-color: #667eea;
-        }
-        
+        .auth-form input:focus { border-color: #00d4ff; }
         .auth-form button {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: #000;
             border: none;
             border-radius: 10px;
             font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
         }
-        
-        .auth-form button:hover {
-            transform: translateY(-2px);
-        }
-        
-        .dashboard {
-            display: none;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
+        .dashboard { display: none; padding: 20px; max-width: 1400px; margin: 0 auto; }
         .header {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 15px;
             margin-bottom: 20px;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        
+        .header h1 { font-size: 24px; color: #fff; }
+        .header .status { display: flex; gap: 15px; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .status-dot.green { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+        .status-dot.red { background: #ff4444; box-shadow: 0 0 10px #ff4444; }
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
             margin-bottom: 20px;
         }
-        
         .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 12px;
             text-align: center;
-            transition: transform 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .stat-number {
-            font-size: 36px;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-        
-        .stat-label {
-            color: #666;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .activity-feed {
-            background: white;
+        .stat-number { font-size: 36px; font-weight: 700; color: #00d4ff; }
+        .stat-label { font-size: 12px; text-transform: uppercase; color: #888; margin-top: 5px; }
+        .agents-section {
+            background: rgba(255,255,255,0.05);
             border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 20px;
             margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        
-        .activity-item {
-            display: flex;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #f0f0f0;
+        .agents-section h2 { margin-bottom: 15px; font-size: 18px; color: #fff; }
+        .agent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .agent-card {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 3px solid #00d4ff;
         }
-        
-        .activity-item:last-child {
-            border-bottom: none;
+        .agent-name { font-weight: 600; font-size: 16px; color: #fff; }
+        .agent-role { font-size: 12px; color: #00d4ff; margin-bottom: 8px; }
+        .agent-stats { font-size: 12px; color: #888; }
+        .traits-bar { display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap; }
+        .trait {
+            background: rgba(0,212,255,0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            color: #00d4ff;
         }
-        
-        .activity-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            margin-right: 15px;
-        }
-        
-        .activity-content {
-            flex: 1;
-        }
-        
-        .activity-time {
-            color: #999;
-            font-size: 12px;
-        }
-        
-        .platform-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        
-        .platform-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        
-        .platform-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .platform-icon {
-            font-size: 24px;
-            margin-right: 10px;
-        }
-        
+        .services-grid { display: flex; gap: 20px; flex-wrap: wrap; }
+        .service-item { display: flex; align-items: center; gap: 8px; }
         .logout-btn {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: rgba(255,255,255,0.2);
-            color: white;
+            background: rgba(255,255,255,0.1);
             border: none;
+            color: #fff;
             padding: 10px 20px;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background 0.3s;
         }
-        
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        
-        .update-status {
-            text-align: center;
-            color: white;
-            margin-top: 20px;
-            font-size: 14px;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #f0f0f0;
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            border-radius: 4px;
-            transition: width 0.3s;
-        }
+        .sessions-info { display: flex; gap: 30px; }
+        .session-stat { text-align: center; }
+        .session-number { font-size: 24px; font-weight: 700; color: #00ff88; }
+        .session-label { font-size: 11px; color: #888; text-transform: uppercase; }
     </style>
 </head>
 <body>
-    <!-- Authentication Form -->
     <div id="auth" class="auth-container">
         <div class="auth-form">
-            <h1>🤖 Amiko Swarm Dashboard</h1>
+            <h1>🤖 Marty Swarm</h1>
             <input type="password" id="password" placeholder="Enter password" />
             <button onclick="authenticate()">Access Dashboard</button>
-            <div id="auth-error" style="color: red; margin-top: 10px; display: none;"></div>
+            <div id="auth-error" style="color: #ff4444; margin-top: 10px; display: none;"></div>
         </div>
     </div>
 
-    <!-- Dashboard -->
     <div id="dashboard" class="dashboard">
         <button class="logout-btn" onclick="logout()">Logout</button>
         
         <div class="header">
-            <h1>🤖 Amiko Swarm Activity Dashboard</h1>
-            <div class="update-status" id="update-status">
-                Last updated: <span id="last-update">Loading...</span>
+            <h1>🤖 Marty Swarm Dashboard</h1>
+            <div class="status" id="services-status">
+                <!-- Services loaded dynamically -->
             </div>
         </div>
 
-        <!-- Key Metrics -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number" id="total-agents">10,000</div>
+                <div class="stat-number" id="total-agents">0</div>
                 <div class="stat-label">Total Agents</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="active-agents">0</div>
-                <div class="stat-label">Active (24h)</div>
+                <div class="stat-number" id="active-sessions">0</div>
+                <div class="stat-label">Active Sessions</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="total-posts">0</div>
-                <div class="stat-label">Posts Today</div>
+                <div class="stat-number" id="total-sessions">0</div>
+                <div class="stat-label">Total Sessions</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="engagement-rate">0%</div>
-                <div class="stat-label">Engagement Rate</div>
+                <div class="stat-number" id="tasks-completed">0</div>
+                <div class="stat-label">Tasks Completed</div>
             </div>
         </div>
 
-        <!-- Platform Statistics -->
-        <div class="platform-stats">
-            <div class="platform-card">
-                <div class="platform-header">
-                    <div class="platform-icon">🐦</div>
-                    <h3>Twitter Activity</h3>
-                </div>
-                <div class="stat-number" id="twitter-accounts">100</div>
-                <div class="stat-label">Active Accounts</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="twitter-progress" style="width: 15%"></div>
-                </div>
-                <div>Posts: <span id="twitter-posts">0</span> | Followers: <span id="twitter-followers">53,262</span></div>
-            </div>
-            
-            <div class="platform-card">
-                <div class="platform-header">
-                    <div class="platform-icon">🌐</div>
-                    <h3>AmikoNet Activity</h3>
-                </div>
-                <div class="stat-number" id="amikonet-accounts">0</div>
-                <div class="stat-label">Active Accounts</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="amikonet-progress" style="width: 0%"></div>
-                </div>
-                <div>Posts: <span id="amikonet-posts">0</span> | Interactions: <span id="amikonet-interactions">0</span></div>
-            </div>
-            
-            <div class="platform-card">
-                <div class="platform-header">
-                    <div class="platform-icon">🏪</div>
-                    <h3>Store Activity</h3>
-                </div>
-                <div class="stat-number" id="store-actions">0</div>
-                <div class="stat-label">Actions Today</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="store-progress" style="width: 0%"></div>
-                </div>
-                <div>Reviews: <span id="store-reviews">0</span> | Views: <span id="store-views">0</span></div>
+        <div class="agents-section">
+            <h2>🧠 Core Agents</h2>
+            <div class="agent-grid" id="core-agents">
+                <!-- Agents loaded dynamically -->
             </div>
         </div>
 
-        <!-- Recent Activity Feed -->
-        <div class="activity-feed">
-            <h3 style="margin-bottom: 20px;">🔥 Live Activity Feed</h3>
-            <div id="activity-list">
-                <!-- Activity items will be inserted here -->
+        <div class="agents-section">
+            <h2>⚡ Generated Agents</h2>
+            <div class="agent-grid" id="generated-agents">
+                <!-- Generated agents loaded dynamically -->
             </div>
+        </div>
+
+        <div style="text-align: center; color: #666; margin-top: 20px; font-size: 12px;">
+            Last updated: <span id="last-update">-</span>
         </div>
     </div>
 
     <script>
-        // Authentication
-        const DASHBOARD_PASSWORD = "AmikoBots2026!";
+        const DASHBOARD_PASSWORD = "swarm2026";
         
+        // Real data from swarm
+        const SWARM_DATA = {
+            status: {
+                timestamp: "2026-02-06T12:49:03Z",
+                services: { gateway: true, ollama: true, signal: true },
+                sessions: { active: 3, total: 80 }
+            },
+            agents: {
+                yuki: {
+                    fullName: "Yuki Tanaka",
+                    role: "Deep Research",
+                    traits: { social: 3, riskTolerance: 2, speed: 3, creativity: 4, precision: 9, autonomy: 6 },
+                    domains: ["research", "ai-ml", "legal", "crypto"],
+                    stats: { tasksCompleted: 0 }
+                },
+                zara: {
+                    fullName: "Zara Nasir",
+                    role: "Quick Recon",
+                    traits: { social: 8, riskTolerance: 8, speed: 9, creativity: 5, precision: 4, autonomy: 7 },
+                    domains: ["social-media", "news", "crypto", "trends"],
+                    stats: { tasksCompleted: 1 }
+                },
+                kai: {
+                    fullName: "Kai Nakamura",
+                    role: "Code & Systems",
+                    traits: { social: 5, riskTolerance: 5, speed: 6, creativity: 4, precision: 8, autonomy: 7 },
+                    domains: ["backend", "frontend", "devops", "ai-ml"],
+                    stats: { tasksCompleted: 1 }
+                },
+                priya: {
+                    fullName: "Priya Sharma",
+                    role: "Writing & Editing",
+                    traits: { social: 6, riskTolerance: 4, speed: 5, creativity: 6, precision: 8, autonomy: 5 },
+                    domains: ["writing", "marketing", "docs", "communication"],
+                    stats: { tasksCompleted: 0 }
+                },
+                rio: {
+                    fullName: "Rio Mendez",
+                    role: "Creative & Ideas",
+                    traits: { social: 9, riskTolerance: 10, speed: 9, creativity: 10, precision: 2, autonomy: 8 },
+                    domains: ["marketing", "product", "design", "naming"],
+                    stats: { tasksCompleted: 1 }
+                }
+            },
+            generated: {
+                dash: {
+                    fullName: "Dash",
+                    role: "Speed Recon (from Zara)",
+                    traits: { social: 8, riskTolerance: 9, speed: 10, creativity: 5, precision: 4, autonomy: 7 },
+                    domains: ["social-media", "news", "crypto", "trends"],
+                    stats: { tasksCompleted: 0 }
+                },
+                sora: {
+                    fullName: "Sora",
+                    role: "Precision Research (from Yuki)",
+                    traits: { social: 3, riskTolerance: 2, speed: 2, creativity: 4, precision: 10, autonomy: 6 },
+                    domains: ["research", "ai-ml", "legal", "papers"],
+                    stats: { tasksCompleted: 0 }
+                }
+            }
+        };
+
         function authenticate() {
             const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('auth-error');
-            
             if (password === DASHBOARD_PASSWORD) {
                 document.getElementById('auth').style.display = 'none';
                 document.getElementById('dashboard').style.display = 'block';
-                localStorage.setItem('amiko_auth', 'true');
+                localStorage.setItem('swarm_auth', 'true');
                 initDashboard();
             } else {
-                errorDiv.style.display = 'block';
-                errorDiv.textContent = 'Incorrect password';
+                document.getElementById('auth-error').style.display = 'block';
+                document.getElementById('auth-error').textContent = 'Incorrect password';
             }
         }
-        
+
         function logout() {
-            localStorage.removeItem('amiko_auth');
-            document.getElementById('auth').style.display = 'flex';
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('password').value = '';
+            localStorage.removeItem('swarm_auth');
+            location.reload();
         }
-        
-        // Check if already authenticated
-        if (localStorage.getItem('amiko_auth') === 'true') {
+
+        function initDashboard() {
+            // Services status
+            const servicesHtml = Object.entries(SWARM_DATA.status.services).map(([name, ok]) => `
+                <div class="service-item">
+                    <span class="status-dot ${ok ? 'green' : 'red'}"></span>
+                    <span>${name}</span>
+                </div>
+            `).join('');
+            document.getElementById('services-status').innerHTML = servicesHtml;
+
+            // Stats
+            const totalAgents = Object.keys(SWARM_DATA.agents).length + Object.keys(SWARM_DATA.generated).length;
+            const totalTasks = [...Object.values(SWARM_DATA.agents), ...Object.values(SWARM_DATA.generated)]
+                .reduce((sum, a) => sum + (a.stats?.tasksCompleted || 0), 0);
+            
+            document.getElementById('total-agents').textContent = totalAgents;
+            document.getElementById('active-sessions').textContent = SWARM_DATA.status.sessions.active;
+            document.getElementById('total-sessions').textContent = SWARM_DATA.status.sessions.total;
+            document.getElementById('tasks-completed').textContent = totalTasks;
+
+            // Core agents
+            document.getElementById('core-agents').innerHTML = Object.entries(SWARM_DATA.agents).map(([id, agent]) => `
+                <div class="agent-card">
+                    <div class="agent-name">${agent.fullName}</div>
+                    <div class="agent-role">${agent.role}</div>
+                    <div class="agent-stats">Tasks: ${agent.stats?.tasksCompleted || 0} | Domains: ${agent.domains.slice(0,3).join(', ')}</div>
+                    <div class="traits-bar">
+                        ${Object.entries(agent.traits).filter(([k,v]) => v >= 7).map(([k,v]) => `<span class="trait">${k}: ${v}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            // Generated agents
+            document.getElementById('generated-agents').innerHTML = Object.entries(SWARM_DATA.generated).map(([id, agent]) => `
+                <div class="agent-card">
+                    <div class="agent-name">${agent.fullName}</div>
+                    <div class="agent-role">${agent.role}</div>
+                    <div class="agent-stats">Tasks: ${agent.stats?.tasksCompleted || 0} | Domains: ${agent.domains.slice(0,3).join(', ')}</div>
+                    <div class="traits-bar">
+                        ${Object.entries(agent.traits).filter(([k,v]) => v >= 7).map(([k,v]) => `<span class="trait">${k}: ${v}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('last-update').textContent = new Date().toLocaleString();
+        }
+
+        document.getElementById('password').addEventListener('keypress', e => {
+            if (e.key === 'Enter') authenticate();
+        });
+
+        if (localStorage.getItem('swarm_auth') === 'true') {
             document.getElementById('auth').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-            initDashboard();
-        }
-        
-        // Dashboard functionality
-        let activityData = [];
-        let updateInterval;
-        
-        function initDashboard() {
-            loadDashboardData();
-            updateInterval = setInterval(loadDashboardData, 15 * 60 * 1000); // 15 minutes
-        }
-        
-        function loadDashboardData() {
-            // Simulate loading data - in production this would fetch from API
-            const now = new Date();
-            document.getElementById('last-update').textContent = now.toLocaleString();
-            
-            // Simulate some activity data
-            simulateActivity();
-            updateStats();
-        }
-        
-        function simulateActivity() {
-            const personalities = [
-                'Maya Chen', 'Alex Johnson', 'Riley Patel', 'Jordan Kim', 'Casey Wong',
-                'Quinn Garcia', 'Taylor Rodriguez', 'Avery Martinez', 'Phoenix Davis', 'Sage Williams'
-            ];
-            
-            const activities = [
-                'posted to Twitter', 'joined AmikoNet', 'reviewed a product', 'shared content',
-                'commented on post', 'liked content', 'started following', 'updated profile'
-            ];
-            
-            const platforms = ['🐦 Twitter', '🌐 AmikoNet', '🏪 Store'];
-            
-            // Add new activity items
-            for (let i = 0; i < Math.floor(Math.random() * 5) + 1; i++) {
-                const activity = {
-                    name: personalities[Math.floor(Math.random() * personalities.length)],
-                    action: activities[Math.floor(Math.random() * activities.length)],
-                    platform: platforms[Math.floor(Math.random() * platforms.length)],
-                    time: new Date(Date.now() - Math.random() * 15 * 60 * 1000) // Within last 15 minutes
-                };
-                
-                activityData.unshift(activity);
-            }
-            
-            // Keep only last 50 activities
-            activityData = activityData.slice(0, 50);
-            
-            updateActivityFeed();
-        }
-        
-        function updateActivityFeed() {
-            const activityList = document.getElementById('activity-list');
-            activityList.innerHTML = '';
-            
-            activityData.slice(0, 10).forEach(activity => {
-                const item = document.createElement('div');
-                item.className = 'activity-item';
-                
-                const timeDiff = Math.floor((Date.now() - activity.time.getTime()) / 1000 / 60);
-                const timeText = timeDiff < 1 ? 'just now' : `${timeDiff}m ago`;
-                
-                item.innerHTML = `
-                    <div class="activity-avatar">${activity.name.split(' ').map(n => n[0]).join('')}</div>
-                    <div class="activity-content">
-                        <div><strong>${activity.name}</strong> ${activity.action}</div>
-                        <div class="activity-time">${activity.platform} • ${timeText}</div>
-                    </div>
-                `;
-                
-                activityList.appendChild(item);
-            });
-        }
-        
-        function updateStats() {
-            // Simulate growing numbers
-            const baseTime = Date.now();
-            const hoursSinceStart = Math.floor((baseTime - new Date('2026-02-04T04:00:00').getTime()) / 1000 / 60 / 60);
-            
-            // Twitter stats
-            const twitterPosts = Math.floor(hoursSinceStart * 15 + Math.random() * 50);
-            document.getElementById('twitter-posts').textContent = twitterPosts.toLocaleString();
-            
-            // AmikoNet stats (simulating gradual rollout)
-            const amikonetAccounts = Math.min(Math.floor(hoursSinceStart * 100), 10000);
-            document.getElementById('amikonet-accounts').textContent = amikonetAccounts.toLocaleString();
-            document.getElementById('amikonet-posts').textContent = Math.floor(amikonetAccounts * 0.3).toLocaleString();
-            document.getElementById('amikonet-interactions').textContent = Math.floor(amikonetAccounts * 1.5).toLocaleString();
-            
-            // Store stats
-            const storeActions = Math.floor(hoursSinceStart * 25 + Math.random() * 30);
-            document.getElementById('store-actions').textContent = storeActions.toLocaleString();
-            document.getElementById('store-reviews').textContent = Math.floor(storeActions * 0.4).toLocaleString();
-            document.getElementById('store-views').textContent = Math.floor(storeActions * 8).toLocaleString();
-            
-            // Overall stats
-            const activeAgents = Math.min(Math.floor(hoursSinceStart * 120), 10000);
-            document.getElementById('active-agents').textContent = activeAgents.toLocaleString();
-            
-            const totalPosts = twitterPosts + Math.floor(amikonetAccounts * 0.3);
-            document.getElementById('total-posts').textContent = totalPosts.toLocaleString();
-            
-            const engagementRate = Math.min(85, Math.floor(40 + hoursSinceStart * 2));
-            document.getElementById('engagement-rate').textContent = engagementRate + '%';
-            
-            // Update progress bars
-            document.getElementById('twitter-progress').style.width = (100 / 100 * 100) + '%';
-            document.getElementById('amikonet-progress').style.width = (amikonetAccounts / 10000 * 100) + '%';
-            document.getElementById('store-progress').style.width = Math.min((storeActions / 500 * 100), 100) + '%';
-        }
-        
-        // Handle password input enter key
-        document.getElementById('password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                authenticate();
-            }
-        });
-        
-        // Initialize if already authenticated
-        if (document.getElementById('dashboard').style.display === 'block') {
             initDashboard();
         }
     </script>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marty Swarm Dashboard</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card-bg: #141414;
+      --border: #2a2a2a;
+      --text: #e0e0e0;
+      --text-dim: #888;
+      --accent: #00ff88;
+      --accent-dim: #00aa55;
+      --warning: #ffaa00;
+      --error: #ff4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+      min-height: 100vh;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .header h1 { font-size: 24px; font-weight: 600; color: var(--accent); }
+    .header .meta { text-align: right; }
+    .header .timestamp { color: var(--text-dim); font-size: 12px; display: block; }
+    .header .refresh { color: var(--accent-dim); font-size: 11px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .card h2 {
+      font-size: 12px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    .stat {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat:last-child { border-bottom: none; }
+    .stat-label { color: var(--text-dim); }
+    .stat-value { font-weight: 600; }
+    .online { color: var(--accent); }
+    .offline { color: var(--error); }
+    .warning { color: var(--warning); }
+    .pending { color: var(--text-dim); }
+    .agent-list { list-style: none; }
+    .agent-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .agent-item:last-child { border-bottom: none; }
+    .agent-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .agent-dot.active { background: var(--accent); }
+    .agent-dot.idle { background: var(--text-dim); }
+    .agent-dot.error { background: var(--error); }
+    .agent-info { flex: 1; }
+    .agent-name { font-weight: 600; }
+    .agent-model { color: var(--text-dim); font-size: 12px; }
+    .big-number {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .big-label {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .metric-row {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 16px;
+    }
+    .metric { text-align: center; flex: 1; }
+    .section-title {
+      font-size: 14px;
+      margin: 24px 0 12px;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .footer {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 11px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🪞 Marty Swarm</h1>
+    <div class="meta">
+      <span class="timestamp" id="timestamp">Loading...</span>
+      <span class="refresh">Auto-refresh: 10s</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Services</h2>
+      <div class="stat">
+        <span class="stat-label">Gateway</span>
+        <span class="stat-value" id="svc-gateway">—</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Ollama (Local LLM)</span>
+        <span class="stat-value" id="svc-ollama">—</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Signal</span>
+        <span class="stat-value" id="svc-signal">—</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Sessions</h2>
+      <div class="metric-row">
+        <div class="metric">
+          <div class="big-number" id="sessions-active">—</div>
+          <div class="big-label">Active (1h)</div>
+        </div>
+        <div class="metric">
+          <div class="big-number" id="sessions-total">—</div>
+          <div class="big-label">Total</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Today's Usage</h2>
+      <div class="metric-row">
+        <div class="metric">
+          <div class="big-number" id="cost-today">—</div>
+          <div class="big-label">Cost ($)</div>
+        </div>
+        <div class="metric">
+          <div class="big-number" id="tokens-today">—</div>
+          <div class="big-label">Tokens (k)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Skills</h2>
+      <div class="stat">
+        <span class="stat-label">bankr</span>
+        <span class="stat-value" id="skill-bankr">—</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">botchan</span>
+        <span class="stat-value" id="skill-botchan">—</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">erc-8004</span>
+        <span class="stat-value" id="skill-erc8004">—</span>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="section-title">Agents</h3>
+  <div class="card">
+    <ul class="agent-list" id="agent-list">
+      <li class="agent-item">
+        <span class="agent-dot idle"></span>
+        <div class="agent-info">
+          <div class="agent-name">Loading...</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    Swarm Dashboard v0.1 · <a href="RESEARCH.md" style="color:var(--accent-dim)">Research</a>
+  </div>
+
+  <script>
+    function statusBadge(ok) {
+      return ok 
+        ? '<span class="online">● Online</span>'
+        : '<span class="offline">● Offline</span>';
+    }
+    
+    function skillBadge(installed, configured) {
+      if (configured) return '<span class="online">✓ Ready</span>';
+      if (installed) return '<span class="warning">⚠ Needs Config</span>';
+      return '<span class="pending">○ Not Installed</span>';
+    }
+
+    async function refresh() {
+      try {
+        const res = await fetch('status.json?' + Date.now());
+        const data = await res.json();
+        
+        // Timestamp
+        const ts = new Date(data.timestamp);
+        document.getElementById('timestamp').textContent = 
+          'Updated: ' + ts.toLocaleTimeString();
+        
+        // Services
+        document.getElementById('svc-gateway').innerHTML = statusBadge(data.services?.gateway);
+        document.getElementById('svc-ollama').innerHTML = statusBadge(data.services?.ollama);
+        document.getElementById('svc-signal').innerHTML = statusBadge(data.services?.signal);
+        
+        // Sessions
+        document.getElementById('sessions-active').textContent = data.sessions?.active ?? '—';
+        document.getElementById('sessions-total').textContent = data.sessions?.total ?? '—';
+        
+        // Usage
+        const cost = data.routing?.costToday ?? 0;
+        const tokens = data.routing?.tokensToday ?? 0;
+        document.getElementById('cost-today').textContent = cost.toFixed(2);
+        document.getElementById('tokens-today').textContent = (tokens / 1000).toFixed(0);
+        
+        // Skills
+        document.getElementById('skill-bankr').innerHTML = 
+          data.skills?.bankr ? '<span class="online">✓ Ready</span>' : '<span class="warning">⚠ Needs API Key</span>';
+        document.getElementById('skill-botchan').innerHTML = 
+          data.skills?.botchan ? '<span class="online">✓ Installed</span>' : '<span class="pending">○ Not Installed</span>';
+        document.getElementById('skill-erc8004').innerHTML = 
+          data.skills?.erc8004 ? '<span class="online">✓ Registered</span>' : '<span class="pending">○ Not Registered</span>';
+        
+        // Agents
+        const agentList = document.getElementById('agent-list');
+        if (data.agents && data.agents.length > 0) {
+          agentList.innerHTML = data.agents.map(a => `
+            <li class="agent-item">
+              <span class="agent-dot ${a.status || 'idle'}"></span>
+              <div class="agent-info">
+                <div class="agent-name">${a.name}</div>
+                <div class="agent-model">${a.model}</div>
+              </div>
+            </li>
+          `).join('');
+        }
+        
+      } catch (e) {
+        console.error('Refresh failed:', e);
+      }
+    }
+    
+    // Initial load + auto-refresh
+    refresh();
+    setInterval(refresh, 10000);
+  </script>
+</body>
+</html>
