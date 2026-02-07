@@ -115,7 +115,7 @@ Dashboard auto-refreshes every 15 minutes. For manual refresh, reload the page.
 - Clear browser cache
 
 **Password not working?**
-- Ensure exact match: `AmikoBots2026!`
+- Ensure exact match with stored password
 - Check for extra spaces
 - Try different browser
 

@@ -52,13 +52,13 @@ Your URL: `https://amiko-swarm-dashboard.vercel.app`
 
 After deployment, test your dashboard:
 1. Visit your live URL
-2. Enter password: `AmikoBots2026!`
+2. Enter password (see secure password storage)
 3. Verify stats are loading
 4. Check auto-refresh (wait 15 minutes or refresh manually)
 
 ## 🔐 Access Details
 
-**Password**: `AmikoBots2026!`
+**Password**: See secure storage / contact admin  
 **Auto-refresh**: Every 15 minutes  
 **Mobile**: Fully responsive
 **Uptime**: 24/7
@@ -107,7 +107,7 @@ Commit and push changes.
 - Check hosting service status page
 
 **Password issues?**
-- Ensure exact match: `AmikoBots2026!`
+- Ensure exact match with stored password
 - No extra spaces before/after
 - Case sensitive
 
