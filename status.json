@@ -1,30 +1,25 @@
 {
-  "timestamp": "2026-02-06T12:49:28Z",
+  "timestamp": "2026-02-07T02:03:40Z",
   "services": {
     "gateway": true,
     "ollama": true,
     "signal": true
   },
   "sessions": {
-    "active": 3,
-    "total": 80
+    "active": 87,
+    "total": 87
   },
   "routing": {
     "costToday": 0,
     "tokensToday": 0,
     "localRatio": 0
   },
-  "skills": {
-    "bankr": false,
-    "botchan": true,
-    "erc8004": false
-  },
-  "identity": {
-    "erc8004Registered": false,
-    "wallet": null
+  "swarm": {
+    "agents": 32,
+    "postsTotal": 4,
+    "status": "active"
   },
   "agents": [
-    {"name": "main", "model": "claude-opus-4.5", "status": "active"},
-    {"name": "local-worker", "model": "llama3.1:8b", "status": "idle"}
+    {"name": "main", "model": "claude-opus-4.5", "status": "active"}
   ]
 }
