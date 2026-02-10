@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-02-10T08:15:06Z",
+  "timestamp": "2026-02-10T08:30:05Z",
   "services": {
     "gateway": false,
     "ollama": true,
     "signal": true
   },
   "sessions": {
-    "active": 405,
-    "total": 405
+    "active": 406,
+    "total": 406
   },
   "routing": {
     "costToday": 0,
